@@ -19,9 +19,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include QMK_KEYBOARD_H
 #include <stdio.h>
 
-#define OSL_CTL OSM(KC_LCTL)
-#define OSL_ALT OSM(KC_LALT)
-#define OSL_GUI OSM(KC_LGUI)
+#define OSL_CTL OSM(MOD_LCTL)
+#define OSL_ALT OSM(MOD_LALT)
+#define OSL_GUI OSM(MOD_LGUI)
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   [0] = LAYOUT_split_3x6_3(
