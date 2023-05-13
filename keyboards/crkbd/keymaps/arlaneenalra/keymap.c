@@ -172,7 +172,7 @@ void oled_write_mod_row(uint8_t sym, bool set, uint8_t col, uint8_t row) {
   uint8_t val = 0;
   int8_t last_step = -1;
 
-  for(int8_t i = 0; i < 14 ; i ++) {
+  for(int8_t i = 0; i < 12 ; i ++) {
     int8_t step = i / 2;
     if (step != last_step) {
       val = (pgm_read_byte(&mod_symbols[sym][step]) & mask) >> offset;
@@ -242,7 +242,7 @@ void oled_render_mod_status(void) {
   pixel_buffer[30] = 0;
   pixel_buffer[31] = 0;
 
-  oled_set_cursor(0, 10); 
+  oled_set_cursor(0, 11); 
   oled_write_mod_row(
       SYM_SHIFT, mod_status & MOD_MASK_SHIFT, 0, 0);
   oled_write_mod_row(
@@ -250,7 +250,7 @@ void oled_render_mod_status(void) {
   
   oled_write_raw(pixel_buffer, 32);
 
-  oled_set_cursor(0, 11);
+  oled_set_cursor(0, 12);
   oled_write_raw(blank, 1);
   oled_write_mod_row(
       SYM_SHIFT, mod_status & MOD_MASK_SHIFT, 0, 1);
@@ -259,7 +259,7 @@ void oled_render_mod_status(void) {
   
   oled_write_raw(pixel_buffer, 32);
 
-  oled_set_cursor(0, 13);
+  oled_set_cursor(0, 14);
   oled_write_raw(blank, 1);
   oled_write_mod_row(
       SYM_ALT, mod_status & MOD_MASK_ALT, 0, 0);
@@ -268,7 +268,7 @@ void oled_render_mod_status(void) {
   
   oled_write_raw(pixel_buffer, 32);
 
-  oled_set_cursor(0, 14); 
+  oled_set_cursor(0, 15); 
   oled_write_raw(blank, 1);
   oled_write_mod_row(
       SYM_ALT, mod_status & MOD_MASK_ALT, 0, 1);
