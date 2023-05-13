@@ -82,11 +82,33 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 #ifdef OLED_ENABLE
 #include "crkbd.h"
 
+#define ANIM_INVERT false
+#define ANIM_RENDER_WPM true
+#define FAST_TYPE_WPM 45 //Switch to fast animation when over words per minute
+
+#ifdef OLED_ANIMATIONS
+  #ifdef OLED_ANIMATION_CRAB
+    #include "modules/animations/crab.c"
+  #endif
+
+  #ifdef OLED_ANIMATION_DEMON
+    #include "modules/animations/demon.c"
+  #endif
+
+  #ifdef OLED_ANIMATION_BARS
+    #include "modules/animations/music-bars.c"
+  #endif
+
+  #include "modules/animations/animation-utils.c"
+#endif
+
 oled_rotation_t oled_init_user(oled_rotation_t rotation) {
   if (!is_keyboard_master()) {
     return OLED_ROTATION_180;  // flips the display 180 degrees if offhand
   } 
-  return rotation;
+  
+  return OLED_ROTATION_270;
+  //return rotation;
 }
 
 #define L_BASE 0
@@ -94,29 +116,72 @@ oled_rotation_t oled_init_user(oled_rotation_t rotation) {
 #define L_RAISE 4
 #define L_ADJUST 8
 
+static const char PROGMEM layer_symbols[][5] = {
+ { 0x33, 0xCC, 0x33, 0xCC, 0x33 },
+ { 0x14, 0x22, 0x7F, 0x22, 0x14 },
+ { 0x10, 0x20, 0x7F, 0x20, 0x10 },
+ { 0x04, 0x02, 0x7F, 0x02, 0x04 },
+};
+
+char layer_buffer[32];
+
+void oled_write_layer_row(uint8_t sym, uint8_t row) {
+  uint8_t offset = row * 2;
+  uint8_t mask = 0x03 << offset;
+
+  uint8_t val = 0;
+  int8_t last_step = -1;
+
+  layer_buffer[0] = 0;
+  layer_buffer[31] = 0;
+  for(int8_t i = 0; i < 30 ; i ++) {
+    int8_t step = i / 6;
+    if (step != last_step) {
+      val = (pgm_read_byte(&layer_symbols[sym][step]) & mask) >> offset;
+    }
+
+    layer_buffer[i + 1] =
+      ( val & 0x01 ? 0x0f : 0x00 ) |
+      ( val & 0x02 ? 0xf0 : 0x00 );
+      
+  }
+
+  oled_write_raw(layer_buffer, 32);
+}
+
 void oled_render_layer_state(void) {
-    oled_write_P(PSTR("Layer: "), false);
+    uint8_t sym = 0;
+
     switch (layer_state) {
         case L_BASE:
-            oled_write_ln_P(PSTR("Default"), false);
+            sym = 0;
             break;
         case L_LOWER:
-            oled_write_ln_P(PSTR("Lower"), false);
+            sym = 3;
             break;
         case L_RAISE:
-            oled_write_ln_P(PSTR("Raise"), false);
+            sym = 2;
             break;
         case L_ADJUST:
         case L_ADJUST|L_LOWER:
         case L_ADJUST|L_RAISE:
         case L_ADJUST|L_LOWER|L_RAISE:
-            oled_write_ln_P(PSTR("Adjust"), false);
+            sym = 1;
             break;
     }
+
+    oled_set_cursor(0, 1);
+    oled_write_layer_row(sym, 0);
+    oled_set_cursor(0, 2);
+    oled_write_layer_row(sym, 1);
+    oled_set_cursor(0, 3);
+    oled_write_layer_row(sym, 2);
+    oled_set_cursor(0, 4);
+    oled_write_layer_row(sym, 3);
 }
 
 
-char keylog_str[24] = {};
+char keylog_str[32] = {};
 
 const char code_to_name[60] = {
     ' ', ' ', ' ', ' ', 'a', 'b', 'c', 'd', 'e', 'f',
@@ -135,12 +200,13 @@ void set_keylog(uint16_t keycode, keyrecord_t *record) {
   }
 
   // update keylog
-  snprintf(keylog_str, sizeof(keylog_str), "%dx%d, k%2d : %c",
+  snprintf(keylog_str, sizeof(keylog_str), "Key:\n%dx%d,\nk%2d:%c\n",
            record->event.key.row, record->event.key.col,
            keycode, name);
 }
 
 void oled_render_keylog(void) {
+    oled_set_cursor(0, 6);
     oled_write(keylog_str, false);
 }
 
@@ -159,6 +225,7 @@ void render_bootmagic_status(bool status) {
     }
 }
 
+#ifndef OLED_ANIMATIONS
 void oled_render_logo(void) {
     static const char PROGMEM crkbd_logo[] = {
         0x80, 0x81, 0x82, 0x83, 0x84, 0x85, 0x86, 0x87, 0x88, 0x89, 0x8a, 0x8b, 0x8c, 0x8d, 0x8e, 0x8f, 0x90, 0x91, 0x92, 0x93, 0x94,
@@ -167,13 +234,18 @@ void oled_render_logo(void) {
         0};
     oled_write_P(crkbd_logo, false);
 }
+#endif
 
 bool oled_task_user(void) {
     if (is_keyboard_master()) {
         oled_render_layer_state();
         oled_render_keylog();
     } else {
-        oled_render_logo();
+      #ifndef OLED_ANIMATIONS
+      oled_render_logo();
+      #else
+      oled_render_anim();
+      #endif
     }
     return false;
 }
@@ -184,14 +256,5 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   }
   return true;
 }
-
-/*void keyboard_post_init_user(void) {
-  // Customise these values to desired behaviour
-  debug_enable=true;
-  debug_matrix=true;
-  //debug_keyboard=true;
-  //debug_mouse=true;
-}*/
-
 
 #endif // OLED_ENABLE

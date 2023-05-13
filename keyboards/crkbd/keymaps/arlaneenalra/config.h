@@ -27,6 +27,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // #define MASTER_LEFT
 // #define MASTER_RIGHT
 #define EE_HANDS
+#define SPLIT_WPM_ENABLE
 
 //#define QUICK_TAP_TERM 0
 //#define TAPPING_TERM 100
@@ -47,5 +48,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     #define RGBLIGHT_SAT_STEP 17
     #define RGBLIGHT_VAL_STEP 17
 #endif
+
+#ifdef OLED_ENABLE
+
+#define OLED_ANIMATIONS
+  // #define OLED_ANIMATION_CRAB
+  #define OLED_ANIMATION_DEMON
+  //#define OLED_ANIMATION_BARS
+#endif
+
 
 #define OLED_FONT_H "keyboards/crkbd/lib/glcdfont.c"
