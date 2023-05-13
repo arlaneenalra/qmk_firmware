@@ -108,7 +108,6 @@ oled_rotation_t oled_init_user(oled_rotation_t rotation) {
   } 
   
   return OLED_ROTATION_270;
-  //return rotation;
 }
 
 #define L_BASE 0
@@ -116,14 +115,32 @@ oled_rotation_t oled_init_user(oled_rotation_t rotation) {
 #define L_RAISE 4
 #define L_ADJUST 8
 
+#define SYM_BASE 0
+#define SYM_ADJUST 1 
+#define SYM_LOWER 2
+#define SYM_RAISE 3
+
 static const char PROGMEM layer_symbols[][5] = {
- { 0x33, 0xCC, 0x33, 0xCC, 0x33 },
- { 0x14, 0x22, 0x7F, 0x22, 0x14 },
- { 0x10, 0x20, 0x7F, 0x20, 0x10 },
- { 0x04, 0x02, 0x7F, 0x02, 0x04 },
+ { 0x33, 0xCC, 0x33, 0xCC, 0x33 }, // Base
+ { 0x14, 0x22, 0x7F, 0x22, 0x14 }, // Adjust 
+ { 0x10, 0x20, 0x7F, 0x20, 0x10 }, // Lower
+ { 0x04, 0x02, 0x7F, 0x02, 0x04 }  // Raise
 };
 
-char layer_buffer[32];
+#define SYM_SHIFT 0
+#define SYM_CTRL 1
+#define SYM_ALT 2
+#define SYM_CMD 3
+
+static const char PROGMEM mod_symbols[][6] = {
+ { 0x0C, 0x0E, 0xFF, 0xFF, 0x0E, 0x0C }, // shift 
+ { 0x04, 0x02, 0x01, 0x01, 0x02, 0x04 }, // ctl
+ { 0x03, 0x07, 0x0C, 0x18, 0x71, 0x61 }, // alt
+ { 0x33, 0x2D, 0x12, 0x12, 0x2D, 0x33 }, // cmd
+};
+
+
+char pixel_buffer[32];
 
 void oled_write_layer_row(uint8_t sym, uint8_t row) {
   uint8_t offset = row * 2;
@@ -132,21 +149,44 @@ void oled_write_layer_row(uint8_t sym, uint8_t row) {
   uint8_t val = 0;
   int8_t last_step = -1;
 
-  layer_buffer[0] = 0;
-  layer_buffer[31] = 0;
+  pixel_buffer[0] = 0;
+  pixel_buffer[31] = 0;
   for(int8_t i = 0; i < 30 ; i ++) {
     int8_t step = i / 6;
     if (step != last_step) {
       val = (pgm_read_byte(&layer_symbols[sym][step]) & mask) >> offset;
     }
 
-    layer_buffer[i + 1] =
+    pixel_buffer[i + 1] =
       ( val & 0x01 ? 0x0f : 0x00 ) |
       ( val & 0x02 ? 0xf0 : 0x00 );
-      
   }
 
-  oled_write_raw(layer_buffer, 32);
+  oled_write_raw(pixel_buffer, 32);
+}
+
+void oled_write_mod_row(uint8_t sym, bool set, uint8_t col, uint8_t row) {
+  uint8_t offset = row * 4;
+  uint8_t mask = 0x0F << offset;
+
+  uint8_t val = 0;
+  int8_t last_step = -1;
+
+  for(int8_t i = 0; i < 14 ; i ++) {
+    int8_t step = i / 2;
+    if (step != last_step) {
+      val = (pgm_read_byte(&mod_symbols[sym][step]) & mask) >> offset;
+    }
+  
+    val = set ? ~val : val;
+
+    pixel_buffer[i + 2 + (col * 18)] =
+      ( val & 0x01 ? 0x03 : 0x00 ) |
+      ( val & 0x02 ? 0x0C : 0x00 ) | 
+      ( val & 0x04 ? 0x30 : 0x00 ) |
+      ( val & 0x08 ? 0xC0 : 0x00 );
+  }
+
 }
 
 void oled_render_layer_state(void) {
@@ -154,19 +194,19 @@ void oled_render_layer_state(void) {
 
     switch (layer_state) {
         case L_BASE:
-            sym = 0;
+            sym = SYM_BASE;
             break;
         case L_LOWER:
-            sym = 3;
+            sym = SYM_LOWER;
             break;
         case L_RAISE:
-            sym = 2;
+            sym = SYM_RAISE;
             break;
         case L_ADJUST:
         case L_ADJUST|L_LOWER:
         case L_ADJUST|L_RAISE:
         case L_ADJUST|L_LOWER|L_RAISE:
-            sym = 1;
+            sym = SYM_ADJUST;
             break;
     }
 
@@ -180,6 +220,63 @@ void oled_render_layer_state(void) {
     oled_write_layer_row(sym, 3);
 }
 
+uint8_t mod_status = 0;
+
+void oneshot_mods_changed_user(uint8_t mods) {
+  mod_status = mods;
+}
+
+void oled_render_mod_status(void) {
+  const char blank[] = { 0x0 };
+
+  pixel_buffer[0] = 0;
+  pixel_buffer[1] = 0;
+
+  pixel_buffer[14] = 0;
+  pixel_buffer[15] = 0;
+  pixel_buffer[16] = 0;
+  pixel_buffer[17] = 0;
+  pixel_buffer[18] = 0;
+  pixel_buffer[19] = 0;
+
+  pixel_buffer[30] = 0;
+  pixel_buffer[31] = 0;
+
+  oled_set_cursor(0, 10); 
+  oled_write_mod_row(
+      SYM_SHIFT, mod_status & MOD_MASK_SHIFT, 0, 0);
+  oled_write_mod_row(
+      SYM_CTRL, mod_status & MOD_MASK_CTRL, 1, 0);
+  
+  oled_write_raw(pixel_buffer, 32);
+
+  oled_set_cursor(0, 11);
+  oled_write_raw(blank, 1);
+  oled_write_mod_row(
+      SYM_SHIFT, mod_status & MOD_MASK_SHIFT, 0, 1);
+  oled_write_mod_row(
+      SYM_CTRL, mod_status & MOD_MASK_CTRL, 1, 1);
+  
+  oled_write_raw(pixel_buffer, 32);
+
+  oled_set_cursor(0, 13);
+  oled_write_raw(blank, 1);
+  oled_write_mod_row(
+      SYM_ALT, mod_status & MOD_MASK_ALT, 0, 0);
+  oled_write_mod_row(
+      SYM_CMD, mod_status & MOD_MASK_GUI, 1, 0);
+  
+  oled_write_raw(pixel_buffer, 32);
+
+  oled_set_cursor(0, 14); 
+  oled_write_raw(blank, 1);
+  oled_write_mod_row(
+      SYM_ALT, mod_status & MOD_MASK_ALT, 0, 1);
+  oled_write_mod_row(
+      SYM_CMD, mod_status & MOD_MASK_GUI, 1, 1);
+  
+  oled_write_raw(pixel_buffer, 32);
+}
 
 char keylog_str[32] = {};
 
@@ -240,6 +337,7 @@ bool oled_task_user(void) {
     if (is_keyboard_master()) {
         oled_render_layer_state();
         oled_render_keylog();
+        oled_render_mod_status();
     } else {
       #ifndef OLED_ANIMATIONS
       oled_render_logo();
