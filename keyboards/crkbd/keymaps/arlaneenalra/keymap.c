@@ -303,21 +303,6 @@ void oled_render_keylog(void) {
     oled_write(keylog_str, false);
 }
 
-void render_bootmagic_status(bool status) {
-    /* Show Ctrl-Gui Swap options */
-    static const char PROGMEM logo[][2][3] = {
-        {{0x97, 0x98, 0}, {0xb7, 0xb8, 0}},
-        {{0x95, 0x96, 0}, {0xb5, 0xb6, 0}},
-    };
-    if (status) {
-        oled_write_ln_P(logo[0][0], false);
-        oled_write_ln_P(logo[0][1], false);
-    } else {
-        oled_write_ln_P(logo[1][0], false);
-        oled_write_ln_P(logo[1][1], false);
-    }
-}
-
 #ifndef OLED_ANIMATIONS
 void oled_render_logo(void) {
     static const char PROGMEM crkbd_logo[] = {
@@ -329,25 +314,59 @@ void oled_render_logo(void) {
 }
 #endif
 
-bool oled_task_user(void) {
-    if (is_keyboard_master()) {
-        oled_render_layer_state();
-        oled_render_keylog();
-        oled_render_mod_status();
-    } else {
-      #ifndef OLED_ANIMATIONS
-      oled_render_logo();
-      #else
-      oled_render_anim();
-      #endif
+bool rebooting = 0;
+
+void oled_render_boot(void) {
+  rebooting = 1;
+  oled_clear();
+  for (int i = 0; i < 16; i++) {
+    oled_set_cursor(0, i);
+    oled_write_P(PSTR("BOOT "), false);
+  }
+  
+  oled_task(); 
+  
+  // We need to wait for the oled
+  // to finish updating.
+  uint16_t wait = timer_read() + 50;
+  uint16_t last = wait; 
+  while (!timer_expired(timer_read(), wait)) {
+    if (last != timer_read()) {
+      oled_task(); 
     }
+  } 
+} 
+
+bool oled_task_user(void) {
+  if (rebooting) {
     return false;
+  }
+
+  if (is_keyboard_master()) {
+      oled_render_layer_state();
+      oled_render_keylog();
+      oled_render_mod_status();
+  } else {
+    #ifndef OLED_ANIMATIONS
+    oled_render_logo();
+    #else
+    oled_render_anim();
+    #endif
+  }
+  return false;
 }
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   if (record->event.pressed) {
     set_keylog(keycode, record);
+  
+    // Display a special logo prior to rebooting...
+    if (keycode == QK_BOOT) {
+      oled_render_boot();
+    }
   }
+
+
   return true;
 }
 
