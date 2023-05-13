@@ -220,14 +220,10 @@ void oled_render_layer_state(void) {
     oled_write_layer_row(sym, 3);
 }
 
-uint8_t mod_status = 0;
-
-void oneshot_mods_changed_user(uint8_t mods) {
-  mod_status = mods;
-}
-
 void oled_render_mod_status(void) {
   const char blank[] = { 0x0 };
+
+  const uint8_t mod_status = get_mods() | get_oneshot_mods() | get_weak_mods();
 
   pixel_buffer[0] = 0;
   pixel_buffer[1] = 0;
