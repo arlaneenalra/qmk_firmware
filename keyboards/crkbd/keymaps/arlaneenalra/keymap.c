@@ -323,18 +323,8 @@ void oled_render_boot(void) {
     oled_set_cursor(0, i);
     oled_write_P(PSTR("BOOT "), false);
   }
-  
-  oled_task(); 
-  
-  // We need to wait for the oled
-  // to finish updating.
-  uint16_t wait = timer_read() + 50;
-  uint16_t last = wait; 
-  while (!timer_expired(timer_read(), wait)) {
-    if (last != timer_read()) {
-      oled_task(); 
-    }
-  } 
+
+  oled_render_dirty(true);
 } 
 
 bool oled_task_user(void) {
@@ -365,7 +355,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       oled_render_boot();
     }
   }
-
 
   return true;
 }
