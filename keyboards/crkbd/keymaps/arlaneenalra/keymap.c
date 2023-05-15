@@ -346,17 +346,23 @@ bool oled_task_user(void) {
   return false;
 }
 
+bool reboot = false;
+
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   if (record->event.pressed) {
     set_keylog(keycode, record);
   
     // Display a special logo prior to rebooting...
     if (keycode == QK_BOOT) {
-      oled_render_boot();
+      reboot = true; 
     }
   }
 
   return true;
+}
+
+void shutdown_user(void) {
+  oled_render_boot();
 }
 
 #endif // OLED_ENABLE
