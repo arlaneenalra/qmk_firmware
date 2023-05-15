@@ -314,10 +314,7 @@ void oled_render_logo(void) {
 }
 #endif
 
-bool rebooting = 0;
-
 void oled_render_boot(void) {
-  rebooting = 1;
   oled_clear();
   for (int i = 0; i < 16; i++) {
     oled_set_cursor(0, i);
@@ -328,10 +325,6 @@ void oled_render_boot(void) {
 } 
 
 bool oled_task_user(void) {
-  if (rebooting) {
-    return false;
-  }
-
   if (is_keyboard_master()) {
       oled_render_layer_state();
       oled_render_keylog();
@@ -362,7 +355,9 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 }
 
 void shutdown_user(void) {
-  oled_render_boot();
+  if (reboot) {
+    oled_render_boot();
+  }
 }
 
 #endif // OLED_ENABLE
