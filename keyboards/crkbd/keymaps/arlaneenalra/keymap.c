@@ -28,6 +28,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define OSR_GUI OSM(MOD_RGUI)
 #define OSR_SFT OSM(MOD_RSFT)
 
+enum custom_keycodes {
+  QMK_CUT = SAFE_RANGE,
+  QMK_CPY,
+  QMK_PSTE,
+
+  QMK_LNCH,
+  QMK_PMKN,
+};
+
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   [0] = LAYOUT_split_3x6_3(
   //,-----------------------------------------------------.                    ,-----------------------------------------------------.
@@ -37,18 +46,18 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
       OSL_SFT,    KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,                         KC_N,    KC_M, KC_COMM,  KC_DOT, KC_SLSH,  KC_ENT,
   //|--------+--------+--------+--------+--------+--------+--------|  |--------+--------+--------+--------+--------+--------+--------|
-                                           KC_TAB,   MO(1),  KC_SPC,     KC_SPC,   MO(2), OSR_GUI 
+                                           KC_TAB,   TT(1),  KC_SPC,     KC_SPC,   TT(2), OSR_GUI 
                                       //`--------------------------'  `--------------------------'
 
   ),
 
   [1] = LAYOUT_split_3x6_3(
   //,-----------------------------------------------------.                    ,-----------------------------------------------------.
-       KC_TAB,    KC_1,    KC_2,    KC_3,    KC_4,    KC_5,                         KC_6,    KC_7,    KC_8,    KC_9,    KC_0, _______,
+       KC_TAB,    KC_1,    KC_2,    KC_3,    KC_4,    KC_5,                         KC_6,    KC_7,    KC_8,    KC_9,    KC_0,  KC_DEL, 
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
       _______, KC_BRID, KC_BRIU, KC_MCTL, KC_ASST, XXXXXXX,                      KC_LEFT, KC_DOWN,  KC_UP, KC_RIGHT, XXXXXXX, XXXXXXX,
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
-      _______, XXXXXXX,  KC_CUT, KC_COPY, KC_PSTE, XXXXXXX,                      KC_HOME, KC_PGDN, KC_PGUP,  KC_END, XXXXXXX, XXXXXXX,
+      _______, XXXXXXX, QMK_CUT, QMK_CPY,QMK_PSTE, XXXXXXX,                      KC_HOME, KC_PGDN, KC_PGUP,  KC_END, XXXXXXX, XXXXXXX,
   //|--------+--------+--------+--------+--------+--------+--------|  |--------+--------+--------+--------+--------+--------+--------|
                                           _______, _______, _______,    _______,   MO(3), _______
                                       //`--------------------------'  `--------------------------'
@@ -60,7 +69,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
       _______, OSL_ALT, OSL_GUI, XXXXXXX, XXXXXXX, XXXXXXX,                      KC_MINS,  KC_EQL, KC_LBRC, KC_RBRC, KC_BSLS,  KC_GRV,
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
-      _______, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,                      KC_UNDS, KC_PLUS, KC_LCBR, KC_RCBR, KC_PIPE, KC_TILD,
+      _______, XXXXXXX, XXXXXXX, XXXXXXX,QMK_LNCH,QMK_PMKN,                      KC_UNDS, KC_PLUS, KC_LCBR, KC_RCBR, KC_PIPE, KC_TILD,
   //|--------+--------+--------+--------+--------+--------+--------|  |--------+--------+--------+--------+--------+--------+--------|
                                           _______,   MO(3), _______,    _______, _______, _______
                                       //`--------------------------'  `--------------------------'
@@ -345,9 +354,31 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   if (record->event.pressed) {
     set_keylog(keycode, record);
   
-    // Display a special logo prior to rebooting...
-    if (keycode == QK_BOOT) {
-      reboot = true; 
+    switch(keycode) {
+      case QK_BOOT:
+        // Display a special logo prior to rebooting...
+        reboot = true;
+        break;
+
+      case QMK_CPY:
+        SEND_STRING(SS_LGUI("c"));
+        break;
+
+       case QMK_CUT:
+        SEND_STRING(SS_LGUI("x"));
+        break;
+
+       case QMK_PSTE:
+        SEND_STRING(SS_LGUI("v"));
+        break;
+
+       case QMK_LNCH:
+        SEND_STRING("/giphy lunch");
+        break;
+
+       case QMK_PMKN:
+        SEND_STRING("/giphy pumpkin");
+        break;
     }
   }
 
