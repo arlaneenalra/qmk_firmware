@@ -32,6 +32,7 @@ enum custom_keycodes {
   QMK_CUT = SAFE_RANGE,
   QMK_CPY,
   QMK_PSTE,
+  QMK_UNDO,
 
   QMK_LNCH,
   QMK_PMKN,
@@ -57,7 +58,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
       _______, KC_BRID, KC_BRIU, KC_MCTL, KC_ASST, XXXXXXX,                      KC_LEFT, KC_DOWN,  KC_UP, KC_RIGHT, XXXXXXX, XXXXXXX,
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
-      _______, XXXXXXX, QMK_CUT, QMK_CPY,QMK_PSTE, XXXXXXX,                      KC_HOME, KC_PGDN, KC_PGUP,  KC_END, XXXXXXX, XXXXXXX,
+      _______,QMK_UNDO, QMK_CUT, QMK_CPY,QMK_PSTE, XXXXXXX,                      KC_HOME, KC_PGDN, KC_PGUP,  KC_END, XXXXXXX, XXXXXXX,
   //|--------+--------+--------+--------+--------+--------+--------|  |--------+--------+--------+--------+--------+--------+--------|
                                           _______, _______, _______,    _______,   MO(3), _______
                                       //`--------------------------'  `--------------------------'
@@ -370,6 +371,10 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 
        case QMK_PSTE:
         SEND_STRING(SS_LGUI("v"));
+        break;
+
+       case QMK_UNDO:
+        SEND_STRING(SS_LGUI("z"));
         break;
 
        case QMK_LNCH:
