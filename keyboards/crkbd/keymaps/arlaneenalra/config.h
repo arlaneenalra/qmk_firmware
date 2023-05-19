@@ -29,6 +29,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define EE_HANDS
 #define SPLIT_WPM_ENABLE
 
+// I really don't want tab to trigger shift.
+#define NO_AUTO_SHIFT_SPECIAL
+
 #define AUTO_SHIFT_REPEAT
 #define AUTO_SHIFT_TIMEOUT 150
 

@@ -349,6 +349,15 @@ bool oled_task_user(void) {
   return false;
 }
 
+bool get_custom_auto_shifted_key(uint16_t keycode, keyrecord_t *record) {
+  switch (keycode) {
+    case KC_MINUS ... KC_SLASH:
+      return true;
+  }
+
+  return false;
+}
+
 bool reboot = false;
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
