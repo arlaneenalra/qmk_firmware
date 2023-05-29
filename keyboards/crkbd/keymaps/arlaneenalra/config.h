@@ -29,7 +29,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define EE_HANDS
 #define SPLIT_WPM_ENABLE
 
-#define BOTH_SHIFTS_TURNS_ON_CAPS_WORD
+//#define BOTH_SHIFTS_TURNS_ON_CAPS_WORD
 #define TAPPING_TERM 150 
 #define TAPPING_TOGGLE 2
 #define ONESHOT_TAP_TOGGLE 2
