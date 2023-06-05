@@ -6,6 +6,14 @@ CAPS_WORD_ENABLE = yes
 OLED_ENABLE     = yes
 OLED_DRIVER     = SSD1306
 
+OLED_ANIMATIONS = yes
+
+# Only one may be enabled at a time.
+OLED_ANIMATIONS_CRAB = no
+OLED_ANIMATIONS_DEMON = yes
+OLED_ANIMATIONS_MUSIC = no
+
+
 LTO_ENABLE      = yes
 CONSOLE_ENABLE = no 
 

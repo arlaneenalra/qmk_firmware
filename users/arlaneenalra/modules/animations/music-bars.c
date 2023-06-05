@@ -8,17 +8,13 @@
  * MIT License
  */
 
-#pragma once
+#include "animations.h"
 
 //-------- CONFIGURATION START --------
 #ifndef FAST_TYPE_WPM
     #define FAST_TYPE_WPM 45 //Switch to fast animation when over words per minute
 #endif
 //-------- CONFIGURATION END--------
-
-
-#define ANIM_SIZE 512
-#define ANIM_FRAME 300
 
 static void oled_render_anim(void) {
 

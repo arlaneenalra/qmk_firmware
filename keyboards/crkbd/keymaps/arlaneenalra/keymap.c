@@ -99,6 +99,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 #define ANIM_RENDER_WPM true
 #define FAST_TYPE_WPM 45 //Switch to fast animation when over words per minute
 
+#include <modules/animations/animations.h>
+
+/*
 #ifdef OLED_ANIMATIONS
   #ifdef OLED_ANIMATION_CRAB
     #include "modules/animations/crab.c"
@@ -114,6 +117,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
   #include "modules/animations/animation-utils.c"
 #endif
+*/
 
 oled_rotation_t oled_init_user(oled_rotation_t rotation) {
   if (!is_keyboard_master()) {

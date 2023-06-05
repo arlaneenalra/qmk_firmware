@@ -9,16 +9,10 @@
  * MIT License
  */
 
-#pragma once
 
-#define ANIM_SCROLL true
-#define ANIM_FRAME_WIDTH 72
-#define ANIM_SIZE 288
-#define ANIM_BOUNCE true
+#include "animations.h"
 
-#include "animation-utils.c"
-
-static void oled_render_anim(void) {
+void oled_render_anim(void) {
 // 'Idle 01', 72x32px
 static const char crab_idle_01 [] PROGMEM = {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,

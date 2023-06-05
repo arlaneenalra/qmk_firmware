@@ -9,15 +9,9 @@
  * MIT License
  */
 
-#pragma once
+#include "animations.h"
 
-#define ANIM_SCROLL true
-#define ANIM_FRAME_WIDTH 32
-#define ANIM_SIZE 144
-
-#include "animation-utils.c"
-
-static void oled_render_anim(void) {
+void oled_render_anim(void) {
 
 // 'big_demon_idle_anim_f0', 32x36px
     static const char demon_idle_anim_f0 [] PROGMEM = {
