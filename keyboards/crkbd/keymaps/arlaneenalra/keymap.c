@@ -20,27 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include QMK_KEYBOARD_H
 #include <stdio.h>
 
-// Left-hand home row mods
-#define HOME_A LCTL_T(KC_A)
-#define HOME_S LALT_T(KC_S)
-#define HOME_D LGUI_T(KC_D)
-#define HOME_F LSFT_T(KC_F)
-
-// Right-hand home row mods
-#define HOME_J RSFT_T(KC_J)
-#define HOME_K RGUI_T(KC_K)
-#define HOME_L LALT_T(KC_L)
-#define HME_SCLN RCTL_T(KC_SCLN)
-
-enum custom_keycodes {
-  QMK_CUT = SAFE_RANGE,
-  QMK_CPY,
-  QMK_PSTE,
-  QMK_UNDO,
-
-  QMK_LNCH,
-  QMK_PMKN,
-};
+#include <arlaneenalra.h>
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   [0] = LAYOUT_split_3x6_3(
@@ -95,205 +75,12 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
 #ifdef OLED_ENABLE
 
-#define ANIM_INVERT false
-#define ANIM_RENDER_WPM true
-#define FAST_TYPE_WPM 45 //Switch to fast animation when over words per minute
-
-#include <modules/animations/animations.h>
-
-/*
-#ifdef OLED_ANIMATIONS
-  #ifdef OLED_ANIMATION_CRAB
-    #include "modules/animations/crab.c"
-  #endif
-
-  #ifdef OLED_ANIMATION_DEMON
-    #include "modules/animations/demon.c"
-  #endif
-
-  #ifdef OLED_ANIMATION_BARS
-    #include "modules/animations/music-bars.c"
-  #endif
-
-  #include "modules/animations/animation-utils.c"
-#endif
-*/
-
 oled_rotation_t oled_init_user(oled_rotation_t rotation) {
   if (!is_keyboard_master()) {
     return OLED_ROTATION_180;  // flips the display 180 degrees if offhand
   } 
   
   return OLED_ROTATION_270;
-}
-
-#define L_BASE 0
-#define L_LOWER 2
-#define L_RAISE 4
-#define L_ADJUST 8
-
-#define SYM_BASE 0
-#define SYM_ADJUST 1 
-#define SYM_LOWER 2
-#define SYM_RAISE 3
-
-static const char PROGMEM layer_symbols[][5] = {
- { 0x33, 0xCC, 0x33, 0xCC, 0x33 }, // Base
- { 0x14, 0x22, 0x7F, 0x22, 0x14 }, // Adjust 
- { 0x10, 0x20, 0x7F, 0x20, 0x10 }, // Lower
- { 0x04, 0x02, 0x7F, 0x02, 0x04 }  // Raise
-};
-
-#define SYM_SHIFT 0
-#define SYM_CTRL 1
-#define SYM_ALT 2
-#define SYM_CMD 3
-#define SYM_CAPS 4
-
-static const char PROGMEM mod_symbols[][6] = {
- { 0x0C, 0x0E, 0xFF, 0xFF, 0x0E, 0x0C }, // shift 
- { 0x04, 0x02, 0x01, 0x01, 0x02, 0x04 }, // ctl
- { 0x03, 0x07, 0x0C, 0x18, 0x71, 0x61 }, // alt
- { 0x33, 0x2D, 0x12, 0x12, 0x2D, 0x33 }, // cmd
- { 0x3E, 0x41, 0x41, 0x41, 0x22, 0x00 }  // caps word
-};
-
-
-char pixel_buffer[32];
-
-void oled_write_layer_row(uint8_t sym, uint8_t row) {
-  uint8_t offset = row * 2;
-  uint8_t mask = 0x03 << offset;
-
-  uint8_t val = 0;
-  int8_t last_step = -1;
-
-  pixel_buffer[0] = 0;
-  pixel_buffer[31] = 0;
-  for(int8_t i = 0; i < 30 ; i ++) {
-    int8_t step = i / 6;
-    if (step != last_step) {
-      val = (pgm_read_byte(&layer_symbols[sym][step]) & mask) >> offset;
-    }
-
-    pixel_buffer[i + 1] =
-      ( val & 0x01 ? 0x0f : 0x00 ) |
-      ( val & 0x02 ? 0xf0 : 0x00 );
-  }
-
-  oled_write_raw(pixel_buffer, 32);
-}
-
-void oled_write_mod_row(uint8_t sym, bool set, uint8_t col, uint8_t row) {
-  uint8_t offset = row * 4;
-  uint8_t mask = 0x0F << offset;
-
-  uint8_t val = 0;
-  int8_t last_step = -1;
-
-  for(int8_t i = 0; i < 12 ; i ++) {
-    int8_t step = i / 2;
-    if (step != last_step) {
-      val = (pgm_read_byte(&mod_symbols[sym][step]) & mask) >> offset;
-    }
-  
-    val = set ? ~val : val;
-
-    pixel_buffer[i + 2 + (col * 18)] =
-      ( val & 0x01 ? 0x03 : 0x00 ) |
-      ( val & 0x02 ? 0x0C : 0x00 ) | 
-      ( val & 0x04 ? 0x30 : 0x00 ) |
-      ( val & 0x08 ? 0xC0 : 0x00 );
-  }
-
-}
-
-void oled_render_layer_state(void) {
-    uint8_t sym = 0;
-
-    switch (layer_state) {
-        case L_BASE:
-            sym = SYM_BASE;
-            break;
-        case L_LOWER:
-            sym = SYM_LOWER;
-            break;
-        case L_RAISE:
-            sym = SYM_RAISE;
-            break;
-        case L_ADJUST:
-        case L_ADJUST|L_LOWER:
-        case L_ADJUST|L_RAISE:
-        case L_ADJUST|L_LOWER|L_RAISE:
-            sym = SYM_ADJUST;
-            break;
-    }
-
-    oled_set_cursor(0, 1);
-    oled_write_layer_row(sym, 0);
-    oled_set_cursor(0, 2);
-    oled_write_layer_row(sym, 1);
-    oled_set_cursor(0, 3);
-    oled_write_layer_row(sym, 2);
-    oled_set_cursor(0, 4);
-    oled_write_layer_row(sym, 3);
-}
-
-void oled_render_mod_status(void) {
-  const char blank[] = { 0x0 };
-
-  const uint8_t mod_status = get_mods() | get_oneshot_mods() | get_weak_mods();
-  const uint8_t shift_symbol = is_caps_word_on() ? SYM_CAPS : SYM_SHIFT;
-
-  pixel_buffer[0] = 0;
-  pixel_buffer[1] = 0;
-
-  pixel_buffer[14] = 0;
-  pixel_buffer[15] = 0;
-  pixel_buffer[16] = 0;
-  pixel_buffer[17] = 0;
-  pixel_buffer[18] = 0;
-  pixel_buffer[19] = 0;
-
-  pixel_buffer[30] = 0;
-  pixel_buffer[31] = 0;
-
-  // Special handling for Caps Word
-
-  oled_set_cursor(0, 11); 
-  oled_write_mod_row(
-      shift_symbol, mod_status & MOD_MASK_SHIFT, 0, 0);
-  oled_write_mod_row(
-      SYM_CTRL, mod_status & MOD_MASK_CTRL, 1, 0);
-  
-  oled_write_raw(pixel_buffer, 32);
-
-  oled_set_cursor(0, 12);
-  oled_write_raw(blank, 1);
-  oled_write_mod_row(
-      shift_symbol, mod_status & MOD_MASK_SHIFT, 0, 1);
-  oled_write_mod_row(
-      SYM_CTRL, mod_status & MOD_MASK_CTRL, 1, 1);
-  
-  oled_write_raw(pixel_buffer, 32);
-
-  oled_set_cursor(0, 14);
-  oled_write_raw(blank, 1);
-  oled_write_mod_row(
-      SYM_ALT, mod_status & MOD_MASK_ALT, 0, 0);
-  oled_write_mod_row(
-      SYM_CMD, mod_status & MOD_MASK_GUI, 1, 0);
-  
-  oled_write_raw(pixel_buffer, 32);
-
-  oled_set_cursor(0, 15); 
-  oled_write_raw(blank, 1);
-  oled_write_mod_row(
-      SYM_ALT, mod_status & MOD_MASK_ALT, 0, 1);
-  oled_write_mod_row(
-      SYM_CMD, mod_status & MOD_MASK_GUI, 1, 1);
-  
-  oled_write_raw(pixel_buffer, 32);
 }
 
 char keylog_str[32] = {};
@@ -336,21 +123,11 @@ void oled_render_logo(void) {
 }
 #endif
 
-void oled_render_boot(void) {
-  oled_clear();
-  for (int i = 0; i < 16; i++) {
-    oled_set_cursor(0, i);
-    oled_write_P(PSTR("BOOT "), false);
-  }
-
-  oled_render_dirty(true);
-} 
-
 bool oled_task_user(void) {
   if (is_keyboard_master()) {
       oled_render_layer_state();
       oled_render_keylog();
-      oled_render_mod_status();
+      oled_render_mod_status(0, 11);
   } else {
     #ifndef OLED_ANIMATIONS
     oled_render_logo();
@@ -361,51 +138,12 @@ bool oled_task_user(void) {
   return false;
 }
 
-bool reboot = false;
-
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   if (record->event.pressed) {
     set_keylog(keycode, record);
-  
-    switch(keycode) {
-      case QK_BOOT:
-        // Display a special logo prior to rebooting...
-        reboot = true;
-        break;
-
-      case QMK_CPY:
-        SEND_STRING(SS_LGUI("c"));
-        break;
-
-       case QMK_CUT:
-        SEND_STRING(SS_LGUI("x"));
-        break;
-
-       case QMK_PSTE:
-        SEND_STRING(SS_LGUI("v"));
-        break;
-
-       case QMK_UNDO:
-        SEND_STRING(SS_LGUI("z"));
-        break;
-
-       case QMK_LNCH:
-        SEND_STRING("/giphy lunch");
-        break;
-
-       case QMK_PMKN:
-        SEND_STRING("/giphy pumpkin");
-        break;
-    }
   }
 
-  return true;
-}
-
-void shutdown_user(void) {
-  if (reboot) {
-    oled_render_boot();
-  }
+  return process_arlaneenalra_keycode(keycode, record);
 }
 
 #endif // OLED_ENABLE

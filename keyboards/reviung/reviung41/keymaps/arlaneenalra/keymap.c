@@ -14,6 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include QMK_KEYBOARD_H
+#include <arlaneenalra.h>
 
 enum layer_names {
     _BASE,
@@ -60,8 +61,19 @@ layer_state_t layer_state_set_user(layer_state_t state) {
   return update_tri_layer_state(state, _LOWER, _RAISE, _ADJUST);
 }
 
-bool oled_task_user(void) {
-  oled_set_cursor(0,1);
-  oled_write_P(PSTR("Hello World!"), false);
-  return false;
+oled_rotation_t oled_init_user(oled_rotation_t rotation) {
+	return OLED_ROTATION_90;  // flips the display 180 degrees if offhand
 }
+
+bool oled_task_user(void) {
+//	oled_render_layer_state();
+	oled_render_mod_status(0, 0);
+
+	return false;
+}
+
+bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+  return process_arlaneenalra_keycode(keycode, record);
+}
+
+

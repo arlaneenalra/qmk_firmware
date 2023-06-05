@@ -1,9 +1,17 @@
+CAPS_WORD_ENABLE = yes
+
+
+SRC += core.c
 
 # Setup OLED files
 ifeq ($(OLED_ENABLE),yes)
 
+OLED_LAYER = yes
 
 ifeq ($(OLED_ANIMATIONS),yes)
+# This implies wpm
+WPM_ENABLE = yes
+
 CFLAGS += -DOLED_ANIMATIONS
 SRC += modules/animations/animation-utils.c
 
@@ -24,4 +32,11 @@ endif
 
 endif
 
+# Special rendering code
+
+ifeq ($(OLED_LAYER),yes)
+SRC += modules/oled_large/layer_render.c modules/oled_large/reboot.c
 endif
+
+endif
+
