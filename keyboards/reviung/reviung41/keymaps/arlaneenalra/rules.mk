@@ -4,4 +4,5 @@ CONVERT_TO=promicro_rp2040
 OLED_ENABLE     = yes
 OLED_DRIVER     = SSD1306
 
+# CONSOLE_ENABLE = yes
 

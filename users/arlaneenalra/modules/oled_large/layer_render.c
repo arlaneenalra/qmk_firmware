@@ -104,7 +104,7 @@ void oled_render_mod_status(uint8_t col, uint8_t row) {
   
   oled_write_raw(pixel_buffer, 32);
 
-  oled_set_cursor(col, row + 3);
+  oled_set_cursor(col, row + OLED_MOD_STEP_2);
   oled_write_raw(blank, 1);
   oled_write_mod_row(
       SYM_ALT, mod_status & MOD_MASK_ALT, 0, 0);
@@ -113,7 +113,7 @@ void oled_render_mod_status(uint8_t col, uint8_t row) {
   
   oled_write_raw(pixel_buffer, 32);
 
-  oled_set_cursor(col, row + 4); 
+  oled_set_cursor(col, row + OLED_MOD_STEP_3); 
   oled_write_raw(blank, 1);
   oled_write_mod_row(
       SYM_ALT, mod_status & MOD_MASK_ALT, 0, 1);
@@ -123,7 +123,7 @@ void oled_render_mod_status(uint8_t col, uint8_t row) {
   oled_write_raw(pixel_buffer, 32);
 }
 
-void oled_render_layer_state(void) {
+void oled_render_layer_state(uint8_t col, uint8_t row) {
     uint8_t sym = 0;
 
     switch (layer_state) {
@@ -144,13 +144,13 @@ void oled_render_layer_state(void) {
             break;
     }
 
-    oled_set_cursor(0, 1);
+    oled_set_cursor(col, row);
     oled_write_layer_row(sym, 0);
-    oled_set_cursor(0, 2);
+    oled_set_cursor(col, row + 1);
     oled_write_layer_row(sym, 1);
-    oled_set_cursor(0, 3);
+    oled_set_cursor(col, row + 2);
     oled_write_layer_row(sym, 2);
-    oled_set_cursor(0, 4);
+    oled_set_cursor(col, row + 3);
     oled_write_layer_row(sym, 3);
 }
 
