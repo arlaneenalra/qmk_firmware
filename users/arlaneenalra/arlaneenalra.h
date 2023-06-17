@@ -77,7 +77,7 @@ enum layer_names {
 #define RAISE_LAYER(_LAYOUT_, _SPACE_) _LAYOUT_( \
       _______, KC_EXLM,   KC_AT, KC_HASH,  KC_DLR, KC_PERC,                      KC_CIRC, KC_AMPR, KC_ASTR, KC_LPRN, KC_RPRN, _______, \
       _______, _______, _______, _______, _______, XXXXXXX,                      KC_MINS,  KC_EQL, KC_LBRC, KC_RBRC, KC_BSLS, _______, \
-      _______, XXXXXXX, XXXXXXX, XXXXXXX,QMK_LNCH,QMK_PMKN,                      KC_UNDS, KC_PLUS, KC_LCBR, KC_RCBR,  KC_GRV, _______, \
+      _______, DT_PRNT,   DT_UP, DT_DOWN,QMK_LNCH,QMK_PMKN,                      KC_UNDS, KC_PLUS, KC_LCBR, KC_RCBR,  KC_GRV, _______, \
                                           _______, _______,         _SPACE_,     _______, _______ )
 
 #define ADJUST_LAYER(_LAYOUT_, _SPACE_) _LAYOUT_( \

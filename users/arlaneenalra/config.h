@@ -1,7 +1,7 @@
 #pragma once
 
 //#define BOTH_SHIFTS_TURNS_ON_CAPS_WORD
-#define TAPPING_TERM 155 
+#define TAPPING_TERM 145 
 #define TAPPING_TOGGLE 2
 #define ONESHOT_TAP_TOGGLE 2
 
