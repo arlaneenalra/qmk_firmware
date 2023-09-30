@@ -23,7 +23,11 @@
 #define HOME_J RSFT_T(KC_J)
 #define HOME_K RGUI_T(KC_K)
 #define HOME_L LALT_T(KC_L)
-#define HME_SCLN RCTL_T(KC_SCLN)
+#define HME_SCLN LCTL_T(KC_SCLN)
+
+// Sometimes you need a left CTL
+#define HMERSCLN RCTL_T(KC_SCLN)
+
 
 enum custom_keycodes {
   QMK_CUT = SAFE_RANGE,
@@ -70,8 +74,8 @@ enum layer_names {
 
 #define LOWER_LAYER(_LAYOUT_, _SPACE_) _LAYOUT_( \
       _______,    KC_1,    KC_2,    KC_3,    KC_4,    KC_5,                         KC_6,    KC_7,    KC_8,    KC_9,    KC_0, _______, \
-      _______, KC_LCTL, KC_LALT, KC_LGUI, KC_LSFT, KC_MCTL,                      KC_LEFT, KC_DOWN,  KC_UP, KC_RIGHT, XXXXXXX, XXXXXXX, \
-      _______,QMK_UNDO, QMK_CUT, QMK_CPY,QMK_PSTE, KC_LPAD,                      KC_HOME, KC_PGDN, KC_PGUP,  KC_END, XXXXXXX, _______, \
+      _______, KC_LCTL, KC_LALT, KC_LGUI, KC_LSFT, KC_MCTL,                      KC_PGUP, KC_HOME,   KC_UP,  KC_END,HMERSCLN, XXXXXXX, \
+      _______,QMK_UNDO, QMK_CUT, QMK_CPY,QMK_PSTE, KC_LPAD,                      KC_PGDN, KC_LEFT, KC_DOWN,KC_RIGHT, XXXXXXX, XXXXXXX, \
                                           _______, _______,         _SPACE_,     _______, _______ )
 
 #define RAISE_LAYER(_LAYOUT_, _SPACE_) _LAYOUT_( \
