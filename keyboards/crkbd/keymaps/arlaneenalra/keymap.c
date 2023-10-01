@@ -22,15 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <arlaneenalra.h>
 
-const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
-  [_BASE] = BASE_LAYER(LAYOUT_split_3x6_3, SIX_KEY_SPACE),
-
-  [_LOWER] = LOWER_LAYER(LAYOUT_split_3x6_3, SIX_KEY_SPACE),
-
-  [_RAISE] = RAISE_LAYER(LAYOUT_split_3x6_3, SIX_KEY_SPACE),
-
-  [_ADJUST] = ADJUST_LAYER(LAYOUT_split_3x6_3, SIX_KEY_SPACE),
-};
+KEYMAP(LAYOUT_split_3x6_3, MATRIX_ROWS, MATRIX_COLS, SIX_KEY_SPACE)
 
 #ifdef OLED_ENABLE
 
@@ -40,35 +32,6 @@ oled_rotation_t oled_init_user(oled_rotation_t rotation) {
   } 
   
   return OLED_ROTATION_270;
-}
-
-char keylog_str[32] = {};
-
-const char code_to_name[60] = {
-    ' ', ' ', ' ', ' ', 'a', 'b', 'c', 'd', 'e', 'f',
-    'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p',
-    'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
-    '1', '2', '3', '4', '5', '6', '7', '8', '9', '0',
-    'R', 'E', 'B', 'T', '_', '-', '=', '[', ']', '\\',
-    '#', ';', '\'', '`', ',', '.', '/', ' ', ' ', ' '};
-
-void set_keylog(uint16_t keycode, keyrecord_t *record) {
-  char name = ' ';
-    if ((keycode >= QK_MOD_TAP && keycode <= QK_MOD_TAP_MAX) ||
-        (keycode >= QK_LAYER_TAP && keycode <= QK_LAYER_TAP_MAX)) { keycode = keycode & 0xFF; }
-  if (keycode < 60) {
-    name = code_to_name[keycode];
-  }
-
-  // update keylog
-  swnprintf(keylog_str, sizeof(keylog_str), "Key:\n%dx%d,\nk%2d:%c\n",
-           record->event.key.row, record->event.key.col,
-           keycode, name);
-}
-
-void oled_render_keylog(void) {
-    oled_set_cursor(0, 6);
-    oled_write(keylog_str, false);
 }
 
 #ifndef OLED_ANIMATIONS
@@ -89,7 +52,6 @@ layer_state_t layer_state_set_user(layer_state_t state) {
 bool oled_task_user(void) {
   if (is_keyboard_master()) {
       oled_render_layer_state(0, 0);
-      oled_render_keylog();
       oled_render_mod_status(0, 11);
   } else {
     #ifndef OLED_ANIMATIONS
@@ -102,10 +64,6 @@ bool oled_task_user(void) {
 }
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
-  if (record->event.pressed) {
-    set_keylog(keycode, record);
-  }
-
   return process_arlaneenalra_keycode(keycode, record);
 }
 
