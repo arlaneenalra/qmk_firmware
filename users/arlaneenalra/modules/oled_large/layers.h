@@ -7,12 +7,14 @@
 #define L_LOWER 2
 #define L_RAISE 4
 #define L_ADJUST 8
+#define L_NUMBER 16
 
 enum layer_symbols_t {
 	SYM_BASE=0,
-	SYM_ADJUST,
 	SYM_LOWER,
-	SYM_RAISE
+	SYM_RAISE,
+  SYM_NUMBER,
+	SYM_ADJUST,
 };
 
 enum modifier_symbols_t {
