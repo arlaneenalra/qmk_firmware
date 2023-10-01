@@ -41,7 +41,7 @@ enum custom_keycodes {
 
 
 bool process_arlaneenalra_keycode(uint16_t keycode, keyrecord_t *record);
-
+layer_state_t arlaneenalra_layer_state(layer_state_t state);
 
 enum layer_names {
     _BASE,

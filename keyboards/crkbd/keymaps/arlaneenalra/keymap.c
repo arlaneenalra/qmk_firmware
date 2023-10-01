@@ -46,7 +46,7 @@ void oled_render_logo(void) {
 #endif
 
 layer_state_t layer_state_set_user(layer_state_t state) {
-  return update_tri_layer_state(state, _LOWER, _RAISE, _ADJUST);
+  return arlaneenalra_layer_state(state);
 }
 
 bool oled_task_user(void) {

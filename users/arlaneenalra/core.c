@@ -8,6 +8,10 @@ void shutdown_user(void) {
 	oled_render_boot();
 }
 
+layer_state_t arlaneenalra_layer_state(layer_state_t state) {
+  return update_tri_layer_state(state, _LOWER, _RAISE, _ADJUST);
+}
+
 bool process_arlaneenalra_keycode(uint16_t keycode, keyrecord_t *record) {
   if (record->event.pressed) {
     switch(keycode) {
