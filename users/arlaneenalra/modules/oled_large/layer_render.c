@@ -5,7 +5,8 @@ static const char PROGMEM layer_symbols[][6] = {
  { 0x10, 0x20, 0x7F, 0x20, 0x10 }, // Lower
  { 0x04, 0x02, 0x7F, 0x02, 0x04 }, // Raise
  { 0x14, 0x22, 0x7F, 0x22, 0x14 }, // Adjust 
-
+ 
+ { 0x40, 0xEA, 0x1B, 0xEA, 0x40 }, // Nav
  { 0x14, 0x7F, 0x14, 0x7F, 0x14 }, // Number
 };
 
@@ -127,28 +128,6 @@ void oled_render_mod_status(uint8_t col, uint8_t row) {
 
 void oled_render_layer_state(uint8_t col, uint8_t row) {
     uint8_t sym = get_highest_layer(layer_state);
-
-/*    switch (layer_state) {
-        case L_BASE:
-            sym = SYM_BASE;
-            break;
-        case L_LOWER:
-            sym = SYM_LOWER;
-            break;
-        case L_RAISE:
-            sym = SYM_RAISE;
-            break;
-        case L_NUMBER:
-            sym = SYM_NUMBER;
-            break;
-
-        case L_ADJUST:
-        case L_ADJUST|L_LOWER:
-        case L_ADJUST|L_RAISE:
-        case L_ADJUST|L_LOWER|L_RAISE:
-            sym = SYM_ADJUST;
-            break;
-    }*/
 
     oled_set_cursor(col, row);
     oled_write_layer_row(sym, 0);
