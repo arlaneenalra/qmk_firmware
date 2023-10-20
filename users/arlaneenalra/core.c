@@ -3,6 +3,17 @@
 #include <modules/animations/animations.h>
 #include <modules/oled_large/layers.h>
 
+const uint8_t PROGMEM layer_render_map[] = {
+ [_BASE] = SYM_BASE,
+ [_LOWER] = SYM_LOWER,
+ [_RAISE] = SYM_RAISE,
+ [_ADJUST] = SYM_ADJUST,
+ [_NAV] = SYM_NAV,
+ [_NUMBER] = SYM_NUMBER,
+ 
+ [_FROG_LETTER] = SYM_BASE,
+ [_FROG_LETTER2] = SYM_LOWER
+};
 
 void shutdown_user(void) {
 	oled_render_boot();
@@ -56,4 +67,24 @@ bool process_arlaneenalra_keycode(uint16_t keycode, keyrecord_t *record) {
   }
 
   return true;
+}
+
+// Handle capsword and drop the -_ trick.
+bool caps_word_press_user(uint16_t keycode) {
+   switch (keycode) {
+    // Keycodes that continue Caps Word, with shift applied.
+    case KC_A ... KC_Z:
+      add_weak_mods(MOD_BIT(KC_LSFT));  // Apply shift to next key.
+      return true;
+
+    // Keycodes that continue Caps Word, without shifting.
+    case KC_1 ... KC_0:
+    case KC_BSPC:
+    case KC_DEL:
+    case KC_UNDS:
+      return true;
+
+    default:
+      return false;  // Deactivate Caps Word.
+  }
 }

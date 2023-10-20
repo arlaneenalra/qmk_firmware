@@ -22,7 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <arlaneenalra.h>
 
-KEYMAP(LAYOUT_split_3x6_3, MATRIX_ROWS, MATRIX_COLS, SIX_KEY_SPACE)
+KEYMAP_FROG(LAYOUT_split_3x6_3, MATRIX_ROWS, MATRIX_COLS)
 
 #ifdef OLED_ENABLE
 
@@ -52,6 +52,7 @@ layer_state_t layer_state_set_user(layer_state_t state) {
 bool oled_task_user(void) {
   if (is_keyboard_master()) {
       oled_render_layer_state(0, 0);
+      oled_render_frog_state(0, 5, get_highest_layer(default_layer_state) == _FROG_LETTER);
       oled_render_mod_status(0, 11);
   } else {
     #ifndef OLED_ANIMATIONS

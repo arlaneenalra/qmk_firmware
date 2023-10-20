@@ -1,6 +1,10 @@
 #include "layers.h"
 
+extern const uint8_t PROGMEM layer_render_map[];
+
 static const char PROGMEM layer_symbols[][6] = {
+ { 0x00, 0x00, 0x00, 0x00, 0x00 }, // Blank
+                                   
  { 0x33, 0xCC, 0x33, 0xCC, 0x33 }, // Base
  { 0x10, 0x20, 0x7F, 0x20, 0x10 }, // Lower
  { 0x04, 0x02, 0x7F, 0x02, 0x04 }, // Raise
@@ -8,6 +12,8 @@ static const char PROGMEM layer_symbols[][6] = {
  
  { 0x40, 0xEA, 0x1B, 0xEA, 0x40 }, // Nav
  { 0x14, 0x7F, 0x14, 0x7F, 0x14 }, // Number
+ { 0xEA, 0x35, 0xE6, 0x35, 0xEA }, // Frog
+                                   
 };
 
 
@@ -126,16 +132,33 @@ void oled_render_mod_status(uint8_t col, uint8_t row) {
   oled_write_raw(pixel_buffer, 32);
 }
 
-void oled_render_layer_state(uint8_t col, uint8_t row) {
-    uint8_t sym = get_highest_layer(layer_state);
+void oled_render_big_sym(uint8_t col, uint8_t row, uint8_t sym) {
 
-    oled_set_cursor(col, row);
-    oled_write_layer_row(sym, 0);
-    oled_set_cursor(col, row + 1);
-    oled_write_layer_row(sym, 1);
-    oled_set_cursor(col, row + 2);
-    oled_write_layer_row(sym, 2);
-    oled_set_cursor(col, row + 3);
-    oled_write_layer_row(sym, 3);
+  oled_set_cursor(col, row);
+  oled_write_layer_row(sym, 0);
+  oled_set_cursor(col, row + 1);
+  oled_write_layer_row(sym, 1);
+  oled_set_cursor(col, row + 2);
+  oled_write_layer_row(sym, 2);
+  oled_set_cursor(col, row + 3);
+  oled_write_layer_row(sym, 3);
 }
 
+void oled_render_layer_state(uint8_t col, uint8_t row) {
+  uint8_t sym = get_highest_layer(layer_state);
+
+  oled_render_big_sym(col, row, pgm_read_byte(&layer_render_map[sym]));
+}
+
+void oled_render_frog_state(uint8_t col, uint8_t row, bool is_frog) {
+  uint8_t sym;
+
+  // Short term hack to account for frog mode
+  if (is_frog) {
+    sym = SYM_FROG;
+  } else {
+    sym = SYM_BLANK;
+  }
+ 
+  oled_render_big_sym(col, row, sym);
+}

@@ -52,13 +52,10 @@ enum layer_names {
     _ADJUST,
     _NAV,
     _NUMBER,
-};
 
-/*
-#define LOWER  TT(_LOWER)
-#define RAISE  TT(_RAISE)
-#define ADJUST TT(_ADJUST)
-*/
+    _FROG_LETTER,
+    _FROG_LETTER2,
+};
 
 #define LOWER  MO(_LOWER)
 #define RAISE  MO(_RAISE)
@@ -67,6 +64,7 @@ enum layer_names {
 #define NUMBER MO(_NUMBER)
 
 #define SPACE_NUM LT(_NAV, KC_SPC)
+#define SPACE_FROG LT(_FROG_LETTER2, KC_SPC), LT(_FROG_LETTER2, KC_SPC)
 
 #define SIX_KEY_SPACE SPACE_NUM, SPACE_NUM 
 #define FIVE_KEY_SPACE SPACE_NUM 
@@ -75,7 +73,7 @@ enum layer_names {
 #define FIVE_TRANSPARENT _______
 
 #define AE_BASE_LAYER(_LAYOUT_, ...) _LAYOUT_( \
-      QK_GESC,    KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,                             KC_Y,    KC_U,    KC_I,    KC_O,   KC_P,  KC_BSPC, \
+      QK_GESC,    KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,                             KC_Y,    KC_U,    KC_I,    KC_O,    KC_P, KC_BSPC, \
       CW_TOGG,  HOME_A,  HOME_S,  HOME_D,  HOME_F,    KC_G,                             KC_H,  HOME_J,  HOME_K,  HOME_L,HME_SCLN, KC_QUOT, \
        KC_TAB,    KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,                             KC_N,    KC_M, KC_COMM,  KC_DOT, KC_SLSH,  KC_ENT, \
                                            KC_INS,   LOWER,        __VA_ARGS__,        RAISE,  KC_DEL )
@@ -94,7 +92,7 @@ enum layer_names {
 
 #define AE_ADJUST_LAYER(_LAYOUT_, ...) _LAYOUT_( \
       QK_BOOT, RGB_VAI, RGB_SAI, RGB_HUI, RGB_MOD, RGB_TOG,                         RGB_RMOD, RGB_HUD, RGB_SAD, RGB_VAD, KC_VOLD, KC_VOLU, \
-      QK_RBT,  _______, _______, _______, _______, XXXXXXX,                          XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, KC_MUTE,  KC_F12, \
+      QK_RBT,  _______, _______, _______, _______, DF(_FROG_LETTER),        DF(_FROG_LETTER), XXXXXXX, XXXXXXX, XXXXXXX, KC_MUTE,  KC_F12, \
       QK_MAKE,   KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,                            KC_F6,   KC_F7,   KC_F8,   KC_F9,  KC_F10,  KC_F11, \
                                           _______, _______,         __VA_ARGS__,     _______, _______ )
 
@@ -111,6 +109,18 @@ enum layer_names {
                                           _______, _______,         __VA_ARGS__,      KC_TAB,  KC_DEL )
 
 
+#define AE_FROG_LETTER_LAYER(_LAYOUT_, ...) _LAYOUT_( \
+      QK_GESC,    KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,                             KC_T,    KC_R,    KC_E,    KC_W,   KC_Q,  QK_GESC, \
+      KC_LSFT,    KC_A,    KC_S,    KC_D,    KC_F,    KC_G,                             KC_G,    KC_F,    KC_D,    KC_S,   KC_A,  KC_LSFT, \
+       KC_ENT,    KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,                             KC_B,    KC_V,    KC_C,    KC_X,   KC_Z,   KC_ENT, \
+                                        DF(_BASE), XXXXXXX,        __VA_ARGS__,      XXXXXXX,DF(_BASE))
+
+
+#define AE_FROG_LETTER2_LAYER(_LAYOUT_, ...) _LAYOUT_( \
+      _______,    KC_P,    KC_O,    KC_I,    KC_U,    KC_Y,                             KC_Y,    KC_U,    KC_I,    KC_O,   KC_P,  _______, \
+      _______, KC_SCLN,    KC_L,    KC_K,    KC_J,    KC_H,                             KC_H,    KC_J,    KC_K,    KC_L,KC_SCLN,  _______, \
+      _______, KC_SLSH,  KC_DOT, KC_COMM,    KC_M,    KC_N,                             KC_N,    KC_M, KC_COMM,  KC_DOT,KC_SLSH,  _______, \
+                                          _______, _______,        __VA_ARGS__,      _______, _______ )
 
 
 #define KEYMAP(_LAYOUT_, MATRIX_ROWS, MATRIX_COLS, _SPACE_) \
@@ -120,6 +130,18 @@ enum layer_names {
   [_RAISE] = AE_RAISE_LAYER(_LAYOUT_, _SPACE_),                \
   [_ADJUST] = AE_ADJUST_LAYER(_LAYOUT_, _SPACE_),              \
   [_NAV] = AE_NAV_LAYER(_LAYOUT_, _SPACE_),                    \
-  [_NUMBER] = AE_NUMBER_LAYER(_LAYOUT_, _SPACE_),              \
+  [_NUMBER] = AE_NUMBER_LAYER(_LAYOUT_, _SPACE_)               \
+}; 
+
+#define KEYMAP_FROG(_LAYOUT_, MATRIX_ROWS, MATRIX_COLS) \
+  const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = { \
+  [_BASE] = AE_BASE_LAYER(_LAYOUT_, SIX_KEY_SPACE),              \
+  [_LOWER] = AE_LOWER_LAYER(_LAYOUT_, SIX_KEY_SPACE),            \
+  [_RAISE] = AE_RAISE_LAYER(_LAYOUT_, SIX_KEY_SPACE),            \
+  [_ADJUST] = AE_ADJUST_LAYER(_LAYOUT_, SIX_KEY_SPACE),          \
+  [_NAV] = AE_NAV_LAYER(_LAYOUT_, SIX_KEY_SPACE),                \
+  [_NUMBER] = AE_NUMBER_LAYER(_LAYOUT_, SIX_KEY_SPACE),          \
+  [_FROG_LETTER] = AE_FROG_LETTER_LAYER(_LAYOUT_, SPACE_FROG),   \
+  [_FROG_LETTER2] = AE_FROG_LETTER2_LAYER(_LAYOUT_, SPACE_FROG), \
 };
 
