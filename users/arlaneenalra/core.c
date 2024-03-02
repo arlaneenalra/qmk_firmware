@@ -15,8 +15,11 @@ const uint8_t PROGMEM layer_render_map[] = {
  [_FROG_LETTER2] = SYM_LOWER
 };
 
-void shutdown_user(void) {
-	oled_render_boot();
+bool shutdown_user(bool jump_to_bootloader) {
+  if (jump_to_bootloader) {
+  	oled_render_boot();
+  } 
+  return false;
 }
 
 layer_state_t arlaneenalra_layer_state(layer_state_t state) {
