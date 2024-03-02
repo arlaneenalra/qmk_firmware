@@ -169,29 +169,23 @@ bool oled_task_user(void) {
 
 Render a message before booting into bootloader mode.
 ```c
-void oled_render_boot(void) {
-  oled_clear();
-  for (int i = 0; i < 16; i++) {
-    oled_set_cursor(0, i);
-    oled_write_P(PSTR("BOOT "), false);
-  }
-
-  oled_render_dirty(true);
-}
-
-bool process_record_user(uint16_t keycode, keyrecord_t *record) {
-  if (record->event.pressed) {
-  
-    // Display a special message prior to rebooting...
-    if (keycode == QK_BOOT) {
-      oled_render_boot();
+void oled_render_boot(bool bootloader) {
+    oled_clear();
+    for (int i = 0; i < 16; i++) {
+        oled_set_cursor(0, i);
+        if (bootloader) {
+            oled_write_P(PSTR("Awaiting New Firmware "), false);
+        } else {
+            oled_write_P(PSTR("Rebooting "), false);
+        }
     }
-  }
 
-  return true;
+    oled_render_dirty(true);
 }
 
-
+bool shutdown_user(bool jump_to_bootloader) {
+    oled_render_boot(jump_to_bootloader);
+}
 
 ```
 
@@ -219,7 +213,7 @@ These configuration options should be placed in `config.h`. Example:
 |`OLED_SCROLL_TIMEOUT_RIGHT`|*Not defined*                  |Scroll timeout direction is right when defined, left when undefined.                                                 |
 |`OLED_TIMEOUT`             |`60000`                        |Turns off the OLED screen after 60000ms of screen update inactivity. Helps reduce OLED Burn-in. Set to 0 to disable. |
 |`OLED_UPDATE_INTERVAL`     |`0` (`50` for split keyboards) |Set the time interval for updating the OLED display in ms. This will improve the matrix scan rate.                   |
-|`OLED_UPDATE_PROCESS_LIMIT'|`1`                            |Set the number of dirty blocks to render per loop. Increasing may degrade performance.                               |
+|`OLED_UPDATE_PROCESS_LIMIT`|`1`                            |Set the number of dirty blocks to render per loop. Increasing may degrade performance.                               |
 
 ### I2C Configuration
 |Define                     |Default          |Description                                                                                                               |
@@ -330,7 +324,7 @@ bool oled_send_data(const uint8_t *data, uint16_t size);
 // Clears the display buffer, resets cursor position to 0, and sets the buffer to dirty for rendering
 void oled_clear(void);
 
-// Alias to olde_render_dirty to avoid a change in api. 
+// Alias to oled_render_dirty to avoid a change in api.
 #define oled_render() oled_render_dirty(false)
 
 // Renders all dirty blocks to the display at one time or a subset depending on the value of
@@ -342,12 +336,12 @@ void oled_render_dirty(bool all);
 void oled_set_cursor(uint8_t col, uint8_t line);
 
 // Advances the cursor to the next page, writing ' ' if true
-// Wraps to the begining when out of bounds
+// Wraps to the beginning when out of bounds
 void oled_advance_page(bool clearPageRemainder);
 
 // Moves the cursor forward 1 character length
 // Advance page if there is not enough room for the next character
-// Wraps to the begining when out of bounds
+// Wraps to the beginning when out of bounds
 void oled_advance_char(void);
 
 // Writes a single character to the buffer at current cursor position
@@ -414,10 +408,10 @@ bool oled_off(void);
 // not
 bool is_oled_on(void);
 
-// Sets the brightness of the display
+// Sets the brightness level of the display
 uint8_t oled_set_brightness(uint8_t level);
 
-// Gets the current brightness of the display
+// Gets the current brightness level of the display
 uint8_t oled_get_brightness(void);
 
 // Basically it's oled_render, but with timeout management and oled_task_user calling!
@@ -439,12 +433,12 @@ void oled_scroll_set_area(uint8_t start_line, uint8_t end_line);
 // 0=2, 1=3, 2=4, 3=5, 4=25, 5=64, 6=128, 7=256
 void oled_scroll_set_speed(uint8_t speed);
 
-// Scrolls the entire display right
+// Begin scrolling the entire display right
 // Returns true if the screen was scrolling or starts scrolling
 // NOTE: display contents cannot be changed while scrolling
 bool oled_scroll_right(void);
 
-// Scrolls the entire display left
+// Begin scrolling the entire display left
 // Returns true if the screen was scrolling or starts scrolling
 // NOTE: display contents cannot be changed while scrolling
 bool oled_scroll_left(void);
@@ -464,7 +458,7 @@ bool oled_invert(bool invert);
 // Returns the maximum number of characters that will fit on a line
 uint8_t oled_max_chars(void);
 
-// Returns the maximum number of lines that will fit on the oled
+// Returns the maximum number of lines that will fit on the OLED
 uint8_t oled_max_lines(void);
 ```
 
