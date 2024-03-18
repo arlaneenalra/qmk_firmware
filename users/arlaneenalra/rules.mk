@@ -40,3 +40,6 @@ endif
 
 endif
 
+ifeq ($(OLED_NO_LAYER_MAP),yes)
+CFLAGS += -DOLED_NO_LAYER_MAP
+endif

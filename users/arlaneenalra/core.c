@@ -3,6 +3,7 @@
 #include <modules/animations/animations.h>
 #include <modules/oled_large/layers.h>
 
+#ifndef OLED_NO_LAYER_MAP 
 const uint8_t PROGMEM layer_render_map[] = {
  [_BASE] = SYM_BASE,
  [_LOWER] = SYM_LOWER,
@@ -10,10 +11,12 @@ const uint8_t PROGMEM layer_render_map[] = {
  [_ADJUST] = SYM_ADJUST,
  [_NAV] = SYM_NAV,
  [_NUMBER] = SYM_NUMBER,
- 
- [_FROG_LETTER] = SYM_BASE,
+   
+ [_FROG_LETTER] = SYM_FROG,
  [_FROG_LETTER2] = SYM_LOWER
 };
+
+#endif
 
 bool shutdown_user(bool jump_to_bootloader) {
   if (jump_to_bootloader) {

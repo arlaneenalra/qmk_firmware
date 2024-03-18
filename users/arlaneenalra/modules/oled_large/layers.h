@@ -19,7 +19,9 @@ enum layer_symbols_t {
     SYM_NAV,
     SYM_NUMBER,
 
-    SYM_FROG
+    SYM_FROG,
+    SYM_GAME,
+    SYM_SYMBOL
 };
 
  

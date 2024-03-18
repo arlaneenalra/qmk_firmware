@@ -39,6 +39,7 @@ enum custom_keycodes {
   QMK_PMKN,
   QMK_NEWT,
   QMK_ALL,
+  ARL_SAFE
 };
 
 
@@ -55,6 +56,7 @@ enum layer_names {
 
     _FROG_LETTER,
     _FROG_LETTER2,
+    _GAME,
 };
 
 #define LOWER  MO(_LOWER)
@@ -81,8 +83,8 @@ enum layer_names {
 #define AE_LOWER_LAYER(_LAYOUT_, ...) _LAYOUT_( \
        KC_GRV,    KC_1,    KC_2,    KC_3,    KC_4,    KC_5,                             KC_6,    KC_7,    KC_8,    KC_9,    KC_0, _______, \
       _______, KC_LCTL, KC_LALT, KC_LGUI, KC_LSFT, KC_MCTL,                          XXXXXXX,    KC_4,    KC_5,    KC_6, XXXXXXX, XXXXXXX, \
-      _______,QMK_UNDO, QMK_CUT, QMK_CPY,QMK_PSTE, KC_LPAD,                          XXXXXXX,    KC_1,    KC_2,    KC_3, XXXXXXX, _______, \
-                                          _______, _______,        __VA_ARGS__,      _______,    KC_0 )
+      _______,QMK_UNDO, QMK_CUT, QMK_CPY,QMK_PSTE, KC_LPAD,                             KC_0,    KC_1,    KC_2,    KC_3, XXXXXXX, _______, \
+                                          _______, _______,        __VA_ARGS__,      _______, _______ )
 
 #define AE_RAISE_LAYER(_LAYOUT_, ...) _LAYOUT_( \
       _______, KC_EXLM,   KC_AT, KC_HASH,  KC_DLR, KC_PERC,                          KC_CIRC, KC_AMPR, KC_ASTR, KC_LPRN, KC_RPRN, _______, \
@@ -92,7 +94,7 @@ enum layer_names {
 
 #define AE_ADJUST_LAYER(_LAYOUT_, ...) _LAYOUT_( \
       QK_BOOT, RGB_VAI, RGB_SAI, RGB_HUI, RGB_MOD, RGB_TOG,                         RGB_RMOD, RGB_HUD, RGB_SAD, RGB_VAD, KC_VOLD, KC_VOLU, \
-      QK_RBT,  _______, _______, _______, _______, DF(_FROG_LETTER),        DF(_FROG_LETTER), XXXXXXX, XXXXXXX, XXXXXXX, KC_MUTE,  KC_F12, \
+      QK_RBT,  _______, _______, _______, _______, TO(_FROG_LETTER),        TO(_FROG_LETTER), XXXXXXX, XXXXXXX, XXXXXXX, KC_MUTE,  KC_F12, \
       QK_MAKE,   KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,                            KC_F6,   KC_F7,   KC_F8,   KC_F9,  KC_F10,  KC_F11, \
                                           _______, _______,         __VA_ARGS__,     _______, _______ )
 
@@ -113,14 +115,14 @@ enum layer_names {
       QK_GESC,    KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,                             KC_T,    KC_R,    KC_E,    KC_W,   KC_Q,  QK_GESC, \
       KC_LSFT,    KC_A,    KC_S,    KC_D,    KC_F,    KC_G,                             KC_G,    KC_F,    KC_D,    KC_S,   KC_A,  KC_LSFT, \
        KC_ENT,    KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,                             KC_B,    KC_V,    KC_C,    KC_X,   KC_Z,   KC_ENT, \
-                                        DF(_BASE), XXXXXXX,        __VA_ARGS__,      XXXXXXX,DF(_BASE))
+                                        TO(_BASE), XXXXXXX,         __VA_ARGS__,     XXXXXXX,TO(_BASE))
 
 
 #define AE_FROG_LETTER2_LAYER(_LAYOUT_, ...) _LAYOUT_( \
       _______,    KC_P,    KC_O,    KC_I,    KC_U,    KC_Y,                             KC_Y,    KC_U,    KC_I,    KC_O,   KC_P,  _______, \
       _______, KC_SCLN,    KC_L,    KC_K,    KC_J,    KC_H,                             KC_H,    KC_J,    KC_K,    KC_L,KC_SCLN,  _______, \
       _______, KC_SLSH,  KC_DOT, KC_COMM,    KC_M,    KC_N,                             KC_N,    KC_M, KC_COMM,  KC_DOT,KC_SLSH,  _______, \
-                                          _______, _______,        __VA_ARGS__,      _______, _______ )
+                                          _______, _______,         __VA_ARGS__,     _______, _______ )
 
 
 #define KEYMAP(_LAYOUT_, MATRIX_ROWS, MATRIX_COLS, _SPACE_) \
