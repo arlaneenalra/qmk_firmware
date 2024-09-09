@@ -1,6 +1,9 @@
 CAPS_WORD_ENABLE = yes
 DYNAMIC_TAPPING_TERM_ENABLE = yes
 
+#WAIT_FOR_USB = no
+NO_USB_STARTUP_CHECK = yes
+
 SRC += core.c
 
 # Setup OLED files
